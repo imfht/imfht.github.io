@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>
+    
+  Welcome to imfht.github.io!
+  
+
+  </title>
+  <meta name="author" content="">
+  <meta name="description" content="imfht.github.io">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link href="asset/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="atom.xml" rel="alternate" title="Welcome to imfht.github.io!" type="application/atom+xml">
+  <script src="asset/js/modernizr-2.0.js"></script>
+  <script src="asset/js/jquery.min.js"></script>
+  <script src="asset/highlightjs/highlight.pack.js"></script>
+  <link href="asset/highlightjs/styles/solarized_light.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script>hljs.initHighlightingOnLoad();</script>
+
+  <style type="text/css">
+  .cat-children-p{ padding: 6px 0px;}
+  .hljs{background: none;}
+  </style>
+  <script type="text/javascript">
+  var isAddSildbar = true;
+  </script>
+  <script src="asset/js/octopress.js" type="text/javascript"></script>
+</head>
+<script type="text/javascript">
+//链接新开窗口
+function addBlankTargetForLinks () {
+  $('a[href^="http"]').each(function(){
+      $(this).attr('target', '_blank');
+  });
+}
+$(document).ready(function(event) {
+  addBlankTargetForLinks();
+});
+</script>
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="index.html">Welcome to imfht.github.io!</a></h1>
+  
+    <h2>imfht.github.io</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:imfht.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+
+  <li id=""><a target="self" href="index.html">Home</a></li>
+
+  <li id=""><a target="_self" href="archives.html">Archives</a></li>
+
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content"> 
+<div class="blog-index">
+
+	<article>
+		 <header>
+		  	<h1 class="entry-title"><a href="15508261134427.html">全网扫描实战：使用 zmap 和 zgrab2扫描扫描全网</a></h1>
+			<p class="meta"><time datetime="2019-02-22T17:01:53+08:00" 
+			pubdate data-updated="true">2019/2/22</time></p>
+		 </header>
+	  	<div class="entry-content">
+		  	
+		  	<p><iframe src="//www.slideshare.net/slideshow/embed_code/key/xiAbvjCL7DTike" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="//www.slideshare.net/baidu-xwh/scan-the-whold-internet-and-expolit-all-redis-in-the-world" title="Scan the whold internet and expolit all redis in the world." target="_blank">Scan the whold internet and expolit all redis in the world.</a> </strong> from <strong><a href="//www.slideshare.net/baidu-xwh" target="_blank">baidu-xwh</a></strong> </div></p>
+
+
+		</div>
+
+		
+
+	</article>
+ 
+	<article>
+		 <header>
+		  	<h1 class="entry-title"><a href="15508224108794.html">批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册</a></h1>
+			<p class="meta"><time datetime="2019-02-22T16:00:10+08:00" 
+			pubdate data-updated="true">2019/2/22</time></p>
+		 </header>
+	  	<div class="entry-content">
+		  	
+		  	<p>测试了一下使用 Python 操作 Telegram。记录一下大致过程供备忘。</p>
+
+<h2 id="toc_0">0x01 安装 Genymotion与VirtualBox</h2>
+
+<p>Genymotion是一款非常好用的安卓模拟器，网络上有很多的安装教程，这里不再赘述。<br/>
+这里要注意：需要使用安卓6.0以下的安卓虚拟机。原因是安卓6.0引入了运行时权限管理，使我们的自动化任务变得复杂很多，而且涉及到一些 Root 权限的问题。故推荐使用安卓5.0版本的虚拟机。</p>
+
+<h2 id="toc_1">0x02 安装安卓 SDK</h2>
+
+<p>在MacOS 下，使用命令<code>brew cask install android-sdk</code> 进行安装。<br/>
+然后使用 <code>brew cask install homebrew/cask-versions/java8</code>安装 Java8。<br/>
+使用 <code>brew cask info android-sdk</code> 查看安卓 SDK 的 path。<br/>
+上述步骤完成之后，启动 Genymotion 虚拟机，运行<code>adb devices</code>应该可以看到运行中的虚拟机。</p>
+
+<pre><code class="language-bash">☁  ~  adb devices
+List of devices attached
+192.168.56.101:5555 device
+</code></pre>
+
+<h2 id="toc_2">0x03 安装 &amp; 配置Appium</h2>
+
+<p>前往 <code>https://github.com/appium/appium-desktop/releases/latest</code> 下载最新版本的 Appium。<br/>
+点击 Appium，在 ANDROID_HOME 一行中填入安卓 SDK 的 path。JAVA_HOME 实测不用管。<br/>
+<img src="media/15508224108794/15508240121683.jpg" alt=""/></p>
+
+<h2 id="toc_3">0x04 运行我们的 Python代码</h2>
+
+<p>这里选择的号池是 fxhyd.cn。有很多的号池可以选择，不需要局限在这一个。</p>
+
+<pre><code class="language-python">import re
+import time
+
+import requests
+from appium import webdriver
+
+TOKEN = &#39;&#39;
+
+
+def get_number():
+    &quot;&quot;&quot;
+    从号池中获取号码
+    &quot;&quot;&quot;
+    req = requests.get(
+        &quot;http://api.fxhyd.cn/UserInterface.aspx?action=getmobile&amp;token=%s&amp;itemid=3988&amp;excludeno=170.171.150&quot; % TOKEN)
+    if &#39;success&#39; in req.text:
+        return req.text.split(&quot;|&quot;)[-1]
+
+
+def get_message(phone_number):
+    &quot;&quot;&quot;
+    获取短信验证码
+    &quot;&quot;&quot;
+    while True:
+        req = requests.get(
+            &quot;http://api.fxhyd.cn/UserInterface.aspx?action=getsms&amp;token=%s&amp;itemid=3988&amp;mobile=%s&amp;release=1&quot; % (
+                TOKEN, phone_number))
+        if &quot;success&quot; not in req.text:
+            print(req.text)  # 30001
+        else:
+            return re.findall(&quot;\\d+&quot;, req.text)[0]
+        time.sleep(10)
+
+
+def release_number(phone_number):
+    req = requests.get(
+        &quot;http://api.fxhyd.cn/UserInterface.aspx?action=release&amp;token=%s&amp;itemid=3988&amp;mobile=%s,&quot; % (TOKEN, phone_number))
+    print(req.text)
+
+
+def main():
+    desired_caps = {}
+    desired_caps[&#39;platformName&#39;] = &#39;Android&#39;
+    desired_caps[&#39;platformVersion&#39;] = &#39;5.0&#39;
+    desired_caps[&#39;deviceName&#39;] = &#39;Android Emulator&#39;
+    desired_caps[&#39;appPackage&#39;] = &#39;org.telegram.messenger&#39;
+    desired_caps[&#39;appActivity&#39;] = &#39;org.telegram.ui.LaunchActivity&#39;
+    desired_caps[&#39;newCommandTimeout&#39;] = 2000000  # Appium默认的超时是60s: 在60s 内没有接到指令的话会重启应用，这里加大这个值
+    driver = webdriver.Remote(&#39;http://localhost:4723/wd/hub&#39;, desired_caps)
+    driver.find_elements_by_class_name(&quot;android.widget.TextView&quot;)[-1].click()
+    try:
+        print(driver.page_source)
+        country_num, phone_number = driver.find_elements_by_class_name(&quot;android.widget.EditText&quot;)
+        for i in range(10):
+            driver.keyevent(67)
+        number = get_number()
+        print(&quot;get number %s&quot; % number)
+        phone_number.send_keys(&quot;86%s&quot; % number)
+        driver.find_elements_by_class_name(&quot;android.widget.FrameLayout&quot;)[5].click()  # 对勾勾上
+        message = get_message(number)
+        driver.find_elements_by_class_name(&quot;android.widget.EditText&quot;)[0].send_keys(message)  # 输入验证码
+        driver.find_elements_by_class_name(&quot;android.widget.EditText&quot;)[0].send_keys(number)  # 登录界面
+        # print(release_number(number))
+        driver.find_elements_by_class_name(&quot;android.widget.FrameLayout&quot;)[5].click()  # 对勾勾上
+    except Exception as e:
+        print(e)
+    time.sleep(10)
+    driver.quit()
+
+
+def test_get_release():
+    number = get_number()
+    print(number)
+    release_number(number)
+
+
+if __name__ == &#39;__main__&#39;:
+    main()
+
+</code></pre>
+
+
+		</div>
+
+		
+
+	</article>
+  
+	<div class="pagination">
+	
+<a href="archives.html">Blog Archives</a>
+	 
+	    
+	</div>
+</div>
+ <aside class="sidebar"> 
+
+	<section>
+	  <h1>Categories</h1>
+	  <ul id="recent_posts">
+	  
+	        
+	      </li>
+	   
+	  </ul>
+	</section>
+	<section>
+	  <h1>Recent Posts</h1>
+	  <ul id="recent_posts">
+	  
+	      
+		      <li class="post">
+		        <a href="15508261134427.html">全网扫描实战：使用 zmap 和 zgrab2扫描扫描全网</a>
+		      </li>
+	     
+	  
+	      
+		      <li class="post">
+		        <a href="15508224108794.html">批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册</a>
+		      </li>
+	     
+	   
+	  </ul>
+	</section>
+	
+</aside> </div></div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 -  -
+  <span class="credit">Powered by <a target="_blank" href="http://www.mweb.im">MWeb</a> &nbsp;&nbsp; Theme by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+
+  
+    
+
+
+
+
+</body>
+</html>
