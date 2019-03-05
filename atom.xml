@@ -4,7 +4,7 @@
   <title><![CDATA[Welcome to imfht.github.io!]]></title>
   <link href="https://imfht.github.io/atom.xml" rel="self"/>
   <link href="https://imfht.github.io/"/>
-  <updated>2019-03-05T15:48:28+08:00</updated>
+  <updated>2019-03-05T15:49:51+08:00</updated>
   <id>https://imfht.github.io/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -47,11 +47,8 @@ iPic确实是一款很好用的软件，支持的图床种类也有很多，但�
 /usr/libexec/PlistBuddy -c &quot;Set &#39;:values:Markdown Flag:value&#39; `date +%s`&quot; /Users/`whoami`/Library/Containers/net.toolinbox.ipic/Data/Library/SyncedPreferences/net.toolinbox.ipic.plist &amp;&amp; nohup /Applications/iPic.app/Contents/MacOS/iPic &amp;
 </code></pre>
 
-<p>然后运行cipc即可实现对 iPic 的无限试用。</p>
-
-<h2 id="toc_2">总结</h2>
-
-<p>虽然很简单但是很有效~</p>
+<p>别忘了添加可执行权限 <code>chmod +x /Applications/cipc.app/MacOS/cipc</code>，<br/>
+然后运行cipc即可实现对 iPic 的无限试用。</p>
 
 ]]></content>
   </entry>
