@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <title>
     
-  Archives - Welcome to imfht.github.io!
+  MacOS 软件破解实战：无限试用软件 iPic - Welcome to imfht.github.io!
   
 
   </title>
@@ -77,56 +77,83 @@ $(document).ready(function(event) {
 
 </nav>
   <div id="main">
-    <div id="content">  <div>
-<article role="article">
-  <header>
-    <h1 class="entry-title">Blog Archive</h1>
-  </header>
-	<div id="blog-archives">
-	
-		 
-		  	<h2>2019</h2>
+    <div id="content"> 
+<div>
+	<article class="hentry" role="article">
+	<header>
+			  	<h1 class="entry-title">MacOS 软件破解实战：无限试用软件 iPic</h1>
+				<p class="meta"><time datetime="2019-03-05T15:33:09+08:00" pubdate data-updated="true">2019/3/5</time></p>
+			 </header>
+		  	<div class="entry-content">
+			  	<p>在使用 Typora 时发现这个编辑器可以使用 iPic 上传图片。下载之后发现这个软件是订阅制的，需要 ￥60/年。<br/>
+iPic确实是一款很好用的软件，支持的图床种类也有很多，但是作为一个几乎是0运营成本的软件我不能接受订阅制这个东西。</p>
+
+<h2 id="toc_0">无限试用</h2>
+
+<p>默认 iPic 支持试用7天无限制图床，试用采取的是本地验证。试用开启时间存储在</p>
+
+<pre><code>/Users/yourname/Library/Containers/net.toolinbox.ipic/Data/Library/SyncedPreferences/net.toolinbox.ipic.plist
+</code></pre>
+
+<p><img src="https://img.fiht.me/ipic/2019-03-05-074055.png" alt=""/></p>
+
+<p>将 <code>values</code> -&gt; <code>Markdown</code> -&gt; <code>value</code> 更换为七天之内的时间戳即可实现无限试用。</p>
+
+<h2 id="toc_1">写一个小脚本</h2>
+
+<p>一个方便的做法是在启动 iPic 前将这个试用时间调到一个最近的时间。但将 <code>/Applications/iPic.app/Contents/MacOS/iPic</code>改为启动脚本会出现一些签名的奇怪问题。<br/>
+所以我的解决方法是 </p>
+
+<pre><code>mkdir -p /Applications/cipc.app/MacOS/
+</code></pre>
+
+<p>在 <code>/Applications/cipc.app/MacOS/cipc</code> 中填入如下内容</p>
+
+<pre><code class="language-bash">!/bin/bash
+/usr/libexec/PlistBuddy -c &quot;Set &#39;:values:Markdown Flag:value&#39; `date +%s`&quot; /Users/`whoami`/Library/Containers/net.toolinbox.ipic/Data/Library/SyncedPreferences/net.toolinbox.ipic.plist &amp;&amp; nohup /Applications/iPic.app/Contents/MacOS/iPic &amp;
+</code></pre>
+
+<p>然后运行cipc即可实现对 iPic 的无限试用。</p>
+
+<h2 id="toc_2">总结</h2>
+
+<p>虽然很简单但是很有效~</p>
+
+			</div>
+
 		
-		
-			<article>
-				<h1><a href="15517711892880.html">MacOS 软件破解实战：无限试用软件 iPic</a></h1>
-				<time datetime="2019-03-05T15:33:09+08:00" pubdate><span class='month'>3月</span> <span class='day'>05</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	
-		
-		
-			<article>
-				<h1><a href="15508224108794.html">批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册</a></h1>
-				<time datetime="2019-02-22T16:00:10+08:00" pubdate><span class='month'>2月</span> <span class='day'>22</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	
-		
-		
-			<article>
-				<h1><a href="15508261134427.html">全网扫描实战：使用 zmap 和 zgrab2扫描扫描全网</a></h1>
-				<time datetime="2019-01-22T17:01:53+08:00" pubdate><span class='month'>1月</span> <span class='day'>22</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	 
+	  
+		<footer>
+		 <p class="meta">
+
+			
+			<span class="categories">
+			 
+			</span>
+		    </p>
+		    <p class="meta">
+		      
+		 </p>
+	    
+		<div class="sharing">
+		  
+          
+
+          
 
 		</div>
-</article>
 
-</div> <aside class="sidebar"> 
+	    <p class="meta">
+	    
+	    
+	        <a class="basic-alignment right" href="15508224108794.html" 
+	        title="Next Post: 批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册">批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册 &raquo;</a>
+	    
+	    </p>
+	  </footer>
+	</article>
+</div>
+ <aside class="sidebar"> 
 
 	<section>
 	  <h1>Categories</h1>
