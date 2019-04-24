@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <title>
     
-  Archives - Welcome to imfht.github.io!
+  TravisCi与 Gitbook 实战：使用 travis自动 release PDF版本的文档 - Welcome to imfht.github.io!
   
 
   </title>
@@ -77,68 +77,116 @@ $(document).ready(function(event) {
 
 </nav>
   <div id="main">
-    <div id="content">  <div>
-<article role="article">
-  <header>
-    <h1 class="entry-title">Blog Archive</h1>
-  </header>
-	<div id="blog-archives">
-	
-		 
-		  	<h2>2019</h2>
+    <div id="content"> 
+<div>
+	<article class="hentry" role="article">
+	<header>
+			  	<h1 class="entry-title">TravisCi与 Gitbook 实战：使用 travis自动 release PDF版本的文档</h1>
+				<p class="meta"><time datetime="2019-03-06T09:50:39+08:00" pubdate data-updated="true">2019/3/6</time></p>
+			 </header>
+		  	<div class="entry-content">
+			  	<p>最近有一个项目需要编写比较多的 Markdown 文档，于是使用 Gitbook来完成这个事情，并使用 github 进行版本管理。这篇文章实现了当新的 Markdown 文档被推送到 github 时TravisCi自动发起构建，构建完成之后发布一个PDF release。</p>
+
+<h2 id="toc_0">什么是 Gitbook</h2>
+
+<blockquote>
+<p>GitBook 是一个基于Node.js 的命令行工具，可使用Github/Git 和Markdown 来制作精美的电子书。<br/>
+- 百度百科</p>
+</blockquote>
+
+<h2 id="toc_1">什么是 TravisCi</h2>
+
+<blockquote>
+<p>Travis CI是在软件开发领域中的一个在线的，分布式的持续集成服务，用来构建及测试在GitHub托管的代码。这个软件的代码同时也是开源的，可以在GitHub上下载到，尽管开发者当前并不推荐在闭源项目中单独使用它。<br/>
+ - 维基百科</p>
+</blockquote>
+
+<h2 id="toc_2">实战</h2>
+
+<p>在项目的根目录添加如下的 <code>.travis.yml</code> 文件，在 Travis.yml设置自动 build即可。</p>
+
+<pre><code>language: node_js
+
+node_js:
+  - &quot;9&quot;
+
+# 缓存依赖
+cache:
+  directories:
+    - $HOME/.npm
+
+before_install:
+  - export TZ=&#39;Asia/Shanghai&#39; # 更改时区
+  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6B05F25D762E3157
+  - sudo apt update -qq
+  - sudo apt-get install calibre xvfb -y
+  - sudo apt-get install ttf-wqy-*
+  - echo &#39;#!/bin/bash&#39; | sudo tee -a /usr/local/bin/ebook-convert
+  - echo &#39;Run xvfb-run /usr/bin/ebook-convert $@&#39; | sudo tee -a /usr/local/bin/ebook-convert
+  - echo &#39;xvfb-run /usr/bin/ebook-convert &quot;$@&quot;&#39; | sudo tee -a /usr/local/bin/ebook-convert
+  - sudo chmod +x /usr/local/bin/ebook-convert
+
+# 依赖安装
+install:
+  - npm install gitbook-cli -g
+  # 安装 gitbook 插件
+  - gitbook install
+
+# 构建脚本
+script:
+    # 自定义输出目录 gitbook build src dest
+  - gitbook pdf ./ ./book.pdf
+
+# 分支白名单
+branches:
+  only:
+    - master # 只对 master 分支进行构建
+
+# GitHub Pages 部署
+deploy:
+  provider: releases
+  skip_cleanup: true
+  api_key: $CI_USER_TOKEN
+  file:
+     - book.pdf
+
+</code></pre>
+
+			</div>
+
 		
-		
-			<article>
-				<h1><a href="15518370394099.html">TravisCi与 Gitbook 实战：使用 travis自动 release PDF版本的文档</a></h1>
-				<time datetime="2019-03-06T09:50:39+08:00" pubdate><span class='month'>3月</span> <span class='day'>06</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	
-		
-		
-			<article>
-				<h1><a href="15517711892880.html">MacOS 软件破解实战：无限试用图床软件 iPic</a></h1>
-				<time datetime="2019-03-05T15:33:09+08:00" pubdate><span class='month'>3月</span> <span class='day'>05</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	
-		
-		
-			<article>
-				<h1><a href="15508224108794.html">批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册</a></h1>
-				<time datetime="2019-02-22T16:00:10+08:00" pubdate><span class='month'>2月</span> <span class='day'>22</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	
-		
-		
-			<article>
-				<h1><a href="15508261134427.html">全网扫描实战：使用 zmap 和 zgrab2扫描扫描全网</a></h1>
-				<time datetime="2019-01-22T17:01:53+08:00" pubdate><span class='month'>1月</span> <span class='day'>22</span> <span class='year'>2019</span></time>
-				<footer>
-				  
-				   
-				  
-				</footer>
-			</article>
- 	 
+	  
+		<footer>
+		 <p class="meta">
+
+			
+			<span class="categories">
+			 
+			</span>
+		    </p>
+		    <p class="meta">
+		      
+		 </p>
+	    
+		<div class="sharing">
+		  
+          
+
+          
 
 		</div>
-</article>
 
-</div> <aside class="sidebar"> 
+	    <p class="meta">
+	    
+	    
+	        <a class="basic-alignment right" href="15517711892880.html" 
+	        title="Next Post: MacOS 软件破解实战：无限试用图床软件 iPic">MacOS 软件破解实战：无限试用图床软件 iPic &raquo;</a>
+	    
+	    </p>
+	  </footer>
+	</article>
+</div>
+ <aside class="sidebar"> 
 
 	<section>
 	  <h1>Categories</h1>
