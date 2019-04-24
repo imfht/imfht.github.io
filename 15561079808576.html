@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <title>
     
-  Welcome to imfht.github.io!
+  Spark 与 ElasticSearch 实战 - 使用 Spark处理 Rapid7的HTTP 数据并使用 ES 做索引 - Welcome to imfht.github.io!
   
 
   </title>
@@ -78,17 +78,14 @@ $(document).ready(function(event) {
 </nav>
   <div id="main">
     <div id="content"> 
-<div class="blog-index">
-
-	<article>
-		 <header>
-		  	<h1 class="entry-title"><a href="15561079808576.html">Spark 与 ElasticSearch 实战 - 使用 Spark处理 Rapid7的HTTP 数据并使用 ES 做索引</a></h1>
-			<p class="meta"><time datetime="2019-04-24T20:13:00+08:00" 
-			pubdate data-updated="true">2019/4/24</time></p>
-		 </header>
-	  	<div class="entry-content">
-		  	
-		  	<p>Rapid7提供了全网常见端口的 HTTP 数据，数据的地址可以在<a href="https://opendata.rapid7.com/sonar.tcp/">https://opendata.rapid7.com/sonar.tcp/</a>中被找到，数据的格式如下所示：</p>
+<div>
+	<article class="hentry" role="article">
+	<header>
+			  	<h1 class="entry-title">Spark 与 ElasticSearch 实战 - 使用 Spark处理 Rapid7的HTTP 数据并使用 ES 做索引</h1>
+				<p class="meta"><time datetime="2019-04-24T20:13:00+08:00" pubdate data-updated="true">2019/4/24</time></p>
+			 </header>
+		  	<div class="entry-content">
+			  	<p>Rapid7提供了全网常见端口的 HTTP 数据，数据的地址可以在<a href="https://opendata.rapid7.com/sonar.tcp/">https://opendata.rapid7.com/sonar.tcp/</a>中被找到，数据的格式如下所示：</p>
 
 <pre><code class="language-json">{&quot;data&quot;:&quot;SFRUUC8xLjEgNDA0IE5vdCBGb3VuZA0KU0VSVkVSOiBMaW51eC8yLjQuMzAsIFVQblAvMS4wLCBQb3J0YWJsZSBTREsgZm9yIFVQblAgZGV2aWNlcy8xLjMuMQ0KQ09OTkVDVElPTjogY2xvc2UNCkNPTlRFTlQtTEVOR1RIOiA0OA0KQ09OVEVOVC1UWVBFOiB0ZXh0L2h0bWwNCg0KPGh0bWw+PGJvZHk+PGgxPjQwNCBOb3QgRm91bmQ8L2gxPjwvYm9keT48L2h0bWw+&quot;,&quot;host&quot;:&quot;5.12.214.213&quot;,&quot;ip&quot;:&quot;5.12.214.213&quot;,&quot;path&quot;:&quot;/&quot;,&quot;port&quot;:49153,&quot;vhost&quot;:&quot;5.12.214.213&quot;}
 </code></pre>
@@ -296,288 +293,39 @@ if __name__ == &#39;__main__&#39;:
 1. 对于header中存在 gzip 的HTTP报文，需要使用 gzip 解码 body 中的内容<br/>
 2. 可以从 header 的 Content-Type，body 的 charset 字段中找到编码信息</p>
 
-
-		</div>
-
-		
-
-	</article>
- 
-	<article>
-		 <header>
-		  	<h1 class="entry-title"><a href="15518370394099.html">TravisCi与 Gitbook 实战：使用 TravisCi自动编译Gitbook文档并发布 Release</a></h1>
-			<p class="meta"><time datetime="2019-03-06T09:50:39+08:00" 
-			pubdate data-updated="true">2019/3/6</time></p>
-		 </header>
-	  	<div class="entry-content">
-		  	
-		  	<p>最近有一个项目需要编写比较多的 Markdown 文档，于是使用 Gitbook来完成这个事情，并使用 github 进行版本管理。这篇文章实现了当新的 Markdown 文档被推送到 github 时TravisCi自动发起构建，构建完成之后发布一个PDF release。</p>
-
-<h2 id="toc_0">什么是 Gitbook</h2>
-
-<blockquote>
-<p>GitBook 是一个基于Node.js 的命令行工具，可使用Github/Git 和Markdown 来制作精美的电子书。<br/>
-- 百度百科</p>
-</blockquote>
-
-<h2 id="toc_1">什么是 TravisCi</h2>
-
-<blockquote>
-<p>Travis CI是在软件开发领域中的一个在线的，分布式的持续集成服务，用来构建及测试在GitHub托管的代码。这个软件的代码同时也是开源的，可以在GitHub上下载到，尽管开发者当前并不推荐在闭源项目中单独使用它。<br/>
- - 维基百科</p>
-</blockquote>
-
-<h2 id="toc_2">实战</h2>
-
-<p>在项目的根目录添加如下的 <code>.travis.yml</code> 文件，在 Travis.yml设置自动 build即可。</p>
-
-<pre><code>language: node_js
-
-node_js:
-  - &quot;9&quot;
-
-# 缓存依赖
-cache:
-  directories:
-    - $HOME/.npm
-
-before_install:
-  - export TZ=&#39;Asia/Shanghai&#39; # 更改时区
-  - sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 6B05F25D762E3157
-  - sudo apt update -qq
-  - sudo apt-get install calibre xvfb -y
-  - sudo apt-get install ttf-wqy-*
-  - echo &#39;#!/bin/bash&#39; | sudo tee -a /usr/local/bin/ebook-convert
-  - echo &#39;Run xvfb-run /usr/bin/ebook-convert $@&#39; | sudo tee -a /usr/local/bin/ebook-convert
-  - echo &#39;xvfb-run /usr/bin/ebook-convert &quot;$@&quot;&#39; | sudo tee -a /usr/local/bin/ebook-convert
-  - sudo chmod +x /usr/local/bin/ebook-convert
-
-# 依赖安装
-install:
-  - npm install gitbook-cli -g
-  # 安装 gitbook 插件
-  - gitbook install
-
-# 构建脚本
-script:
-    # 自定义输出目录 gitbook build src dest
-  - gitbook pdf ./ ./book.pdf
-
-# 分支白名单
-branches:
-  only:
-    - master # 只对 master 分支进行构建
-
-# GitHub Pages 部署
-deploy:
-  provider: releases
-  skip_cleanup: true
-  api_key: $CI_USER_TOKEN
-  file:
-     - book.pdf
-
-</code></pre>
-
-
-		</div>
+			</div>
 
 		
+	  
+		<footer>
+		 <p class="meta">
 
-	</article>
- 
-	<article>
-		 <header>
-		  	<h1 class="entry-title"><a href="15517711892880.html">MacOS 软件破解实战：无限试用图床软件 iPic</a></h1>
-			<p class="meta"><time datetime="2019-03-05T15:33:09+08:00" 
-			pubdate data-updated="true">2019/3/5</time></p>
-		 </header>
-	  	<div class="entry-content">
-		  	
-		  	<p>在使用 Typora 时发现这个编辑器可以使用 iPic 上传图片。下载之后发现这个软件是订阅制的，需要 ￥60/年。<br/>
-iPic确实是一款很好用的软件，支持的图床种类也有很多，但是作为一个几乎是0运营成本的软件我不能接受订阅制这个东西。</p>
-
-<h2 id="toc_0">无限试用</h2>
-
-<p>默认 iPic 支持试用7天无限制图床，试用采取的是本地验证。试用开启时间存储在</p>
-
-<pre><code>/Users/yourname/Library/Containers/net.toolinbox.ipic/Data/Library/SyncedPreferences/net.toolinbox.ipic.plist
-</code></pre>
-
-<p>将 <code>values</code> -&gt; <code>Markdown</code> -&gt; <code>value</code> 更换为七天之内的时间戳即可实现无限试用。<br/>
-<img src="https://img.fiht.me/ipic/2019-03-05-074055.png" alt=""/></p>
-
-<h2 id="toc_1">写一个小脚本</h2>
-
-<p>一个方便的做法是在启动 iPic 前将这个试用时间调到一个最近的时间。但将 <code>/Applications/iPic.app/Contents/MacOS/iPic</code>改为启动脚本会出现一些签名的奇怪问题。<br/>
-所以我的解决方法是 </p>
-
-<pre><code>mkdir -p /Applications/cipc.app/MacOS/
-</code></pre>
-
-<p>在 <code>/Applications/cipc.app/MacOS/cipc</code> 中填入如下内容</p>
-
-<pre><code class="language-bash">!/bin/bash
-/usr/libexec/PlistBuddy -c &quot;Set &#39;:values:Markdown Flag:value&#39; `date +%s`&quot; /Users/`whoami`/Library/Containers/net.toolinbox.ipic/Data/Library/SyncedPreferences/net.toolinbox.ipic.plist &amp;&amp; nohup /Applications/iPic.app/Contents/MacOS/iPic &amp;
-</code></pre>
-
-<p>别忘了添加可执行权限 <code>chmod +x /Applications/cipc.app/MacOS/cipc</code>，<br/>
-然后运行cipc即可实现对 iPic 的无限试用。</p>
-
-
-		</div>
-
-		
-
-	</article>
- 
-	<article>
-		 <header>
-		  	<h1 class="entry-title"><a href="15508224108794.html">批量注册实战：使用Appium 和安卓虚拟机完成 Telegram 批量注册</a></h1>
-			<p class="meta"><time datetime="2019-02-22T16:00:10+08:00" 
-			pubdate data-updated="true">2019/2/22</time></p>
-		 </header>
-	  	<div class="entry-content">
-		  	
-		  	<p>测试了一下使用 Python 操作 Telegram。记录一下大致过程供备忘。</p>
-
-<h2 id="toc_0">0x01 安装 Genymotion与VirtualBox</h2>
-
-<p>Genymotion是一款非常好用的安卓模拟器，网络上有很多的安装教程，这里不再赘述。<br/>
-这里要注意：需要使用安卓6.0以下的安卓虚拟机。原因是安卓6.0引入了运行时权限管理，使我们的自动化任务变得复杂很多，而且涉及到一些 Root 权限的问题。故推荐使用安卓5.0版本的虚拟机。</p>
-
-<h2 id="toc_1">0x02 安装安卓 SDK</h2>
-
-<p>在MacOS 下，使用命令<code>brew cask install android-sdk</code> 进行安装。<br/>
-然后使用 <code>brew cask install homebrew/cask-versions/java8</code>安装 Java8。<br/>
-使用 <code>brew cask info android-sdk</code> 查看安卓 SDK 的 path。<br/>
-上述步骤完成之后，启动 Genymotion 虚拟机，运行<code>adb devices</code>应该可以看到运行中的虚拟机。</p>
-
-<pre><code class="language-bash">☁  ~  adb devices
-List of devices attached
-192.168.56.101:5555 device
-</code></pre>
-
-<h2 id="toc_2">0x03 安装 &amp; 配置Appium</h2>
-
-<p>前往 <code>https://github.com/appium/appium-desktop/releases/latest</code> 下载最新版本的 Appium。<br/>
-点击 Appium，在 ANDROID_HOME 一行中填入安卓 SDK 的 path。JAVA_HOME 实测不用管。<br/>
-<img src="media/15508224108794/15508240121683.jpg" alt=""/></p>
-
-<h2 id="toc_3">0x04 运行我们的 Python代码</h2>
-
-<p>这里选择的号池是 fxhyd.cn。有很多的号池可以选择，不需要局限在这一个。</p>
-
-<pre><code class="language-python">import re
-import time
-
-import requests
-from appium import webdriver
-
-TOKEN = &#39;&#39;
-
-
-def get_number():
-    &quot;&quot;&quot;
-    从号池中获取号码
-    &quot;&quot;&quot;
-    req = requests.get(
-        &quot;http://api.fxhyd.cn/UserInterface.aspx?action=getmobile&amp;token=%s&amp;itemid=3988&amp;excludeno=170.171.150&quot; % TOKEN)
-    if &#39;success&#39; in req.text:
-        return req.text.split(&quot;|&quot;)[-1]
-
-
-def get_message(phone_number):
-    &quot;&quot;&quot;
-    获取短信验证码
-    &quot;&quot;&quot;
-    while True:
-        req = requests.get(
-            &quot;http://api.fxhyd.cn/UserInterface.aspx?action=getsms&amp;token=%s&amp;itemid=3988&amp;mobile=%s&amp;release=1&quot; % (
-                TOKEN, phone_number))
-        if &quot;success&quot; not in req.text:
-            print(req.text)  # 30001
-        else:
-            return re.findall(&quot;\\d+&quot;, req.text)[0]
-        time.sleep(10)
-
-
-def release_number(phone_number):
-    req = requests.get(
-        &quot;http://api.fxhyd.cn/UserInterface.aspx?action=release&amp;token=%s&amp;itemid=3988&amp;mobile=%s,&quot; % (TOKEN, phone_number))
-    print(req.text)
-
-
-def main():
-    desired_caps = {}
-    desired_caps[&#39;platformName&#39;] = &#39;Android&#39;
-    desired_caps[&#39;platformVersion&#39;] = &#39;5.0&#39;
-    desired_caps[&#39;deviceName&#39;] = &#39;Android Emulator&#39;
-    desired_caps[&#39;appPackage&#39;] = &#39;org.telegram.messenger&#39;
-    desired_caps[&#39;appActivity&#39;] = &#39;org.telegram.ui.LaunchActivity&#39;
-    desired_caps[&#39;newCommandTimeout&#39;] = 2000000  # Appium默认的超时是60s: 在60s 内没有接到指令的话会重启应用，这里加大这个值
-    driver = webdriver.Remote(&#39;http://localhost:4723/wd/hub&#39;, desired_caps)
-    driver.find_elements_by_class_name(&quot;android.widget.TextView&quot;)[-1].click()
-    try:
-        print(driver.page_source)
-        country_num, phone_number = driver.find_elements_by_class_name(&quot;android.widget.EditText&quot;)
-        for i in range(10):
-            driver.keyevent(67)
-        number = get_number()
-        print(&quot;get number %s&quot; % number)
-        phone_number.send_keys(&quot;86%s&quot; % number)
-        driver.find_elements_by_class_name(&quot;android.widget.FrameLayout&quot;)[5].click()  # 对勾勾上
-        message = get_message(number)
-        driver.find_elements_by_class_name(&quot;android.widget.EditText&quot;)[0].send_keys(message)  # 输入验证码
-        driver.find_elements_by_class_name(&quot;android.widget.EditText&quot;)[0].send_keys(number)  # 登录界面
-        # print(release_number(number))
-        driver.find_elements_by_class_name(&quot;android.widget.FrameLayout&quot;)[5].click()  # 对勾勾上
-    except Exception as e:
-        print(e)
-    time.sleep(10)
-    driver.quit()
-
-
-def test_get_release():
-    number = get_number()
-    print(number)
-    release_number(number)
-
-
-if __name__ == &#39;__main__&#39;:
-    main()
-
-</code></pre>
-
-
-		</div>
-
-		
-
-	</article>
- 
-	<article>
-		 <header>
-		  	<h1 class="entry-title"><a href="15508261134427.html">全网扫描实战：使用 zmap 和 zgrab2扫描扫描全网</a></h1>
-			<p class="meta"><time datetime="2019-01-22T17:01:53+08:00" 
-			pubdate data-updated="true">2019/1/22</time></p>
-		 </header>
-	  	<div class="entry-content">
-		  	
-		  	<p><iframe src="//www.slideshare.net/slideshow/embed_code/key/xiAbvjCL7DTike" width="595" height="485" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> <div style="margin-bottom:5px"> <strong> <a href="//www.slideshare.net/baidu-xwh/scan-the-whold-internet-and-expolit-all-redis-in-the-world" title="Scan the whold internet and expolit all redis in the world." target="_blank">Scan the whold internet and expolit all redis in the world.</a> </strong> from <strong><a href="//www.slideshare.net/baidu-xwh" target="_blank">baidu-xwh</a></strong> </div></p>
-
-
-		</div>
-
-		
-
-	</article>
-  
-	<div class="pagination">
-	
-<a href="archives.html">Blog Archives</a>
-	 
+			
+			<span class="categories">
+			 
+			</span>
+		    </p>
+		    <p class="meta">
+		      
+		 </p>
 	    
-	</div>
+		<div class="sharing">
+		  
+          
+
+          
+
+		</div>
+
+	    <p class="meta">
+	    
+	    
+	        <a class="basic-alignment right" href="15518370394099.html" 
+	        title="Next Post: TravisCi与 Gitbook 实战：使用 TravisCi自动编译Gitbook文档并发布 Release">TravisCi与 Gitbook 实战：使用 TravisCi自动编译Gitbook文档并发布 Release &raquo;</a>
+	    
+	    </p>
+	  </footer>
+	</article>
 </div>
  <aside class="sidebar"> 
 

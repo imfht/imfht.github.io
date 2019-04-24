@@ -4,7 +4,7 @@
   <title><![CDATA[Welcome to imfht.github.io!]]></title>
   <link href="https://imfht.github.io/atom.xml" rel="self"/>
   <link href="https://imfht.github.io/"/>
-  <updated>2019-04-24T20:12:05+08:00</updated>
+  <updated>2019-04-24T20:29:11+08:00</updated>
   <id>https://imfht.github.io/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -14,7 +14,224 @@
 
   
   <entry>
-    <title type="html"><![CDATA[TravisCi与 Gitbook 实战：使用 travis自动 release PDF版本的文档]]></title>
+    <title type="html"><![CDATA[Spark 与 ElasticSearch 实战 - 使用 Spark处理 Rapid7的HTTP 数据并使用 ES 做索引]]></title>
+    <link href="https://imfht.github.io/15561079808576.html"/>
+    <updated>2019-04-24T20:13:00+08:00</updated>
+    <id>https://imfht.github.io/15561079808576.html</id>
+    <content type="html"><![CDATA[
+<p>Rapid7提供了全网常见端口的 HTTP 数据，数据的地址可以在<a href="https://opendata.rapid7.com/sonar.tcp/">https://opendata.rapid7.com/sonar.tcp/</a>中被找到，数据的格式如下所示：</p>
+
+<pre><code class="language-json">{&quot;data&quot;:&quot;SFRUUC8xLjEgNDA0IE5vdCBGb3VuZA0KU0VSVkVSOiBMaW51eC8yLjQuMzAsIFVQblAvMS4wLCBQb3J0YWJsZSBTREsgZm9yIFVQblAgZGV2aWNlcy8xLjMuMQ0KQ09OTkVDVElPTjogY2xvc2UNCkNPTlRFTlQtTEVOR1RIOiA0OA0KQ09OVEVOVC1UWVBFOiB0ZXh0L2h0bWwNCg0KPGh0bWw+PGJvZHk+PGgxPjQwNCBOb3QgRm91bmQ8L2gxPjwvYm9keT48L2h0bWw+&quot;,&quot;host&quot;:&quot;5.12.214.213&quot;,&quot;ip&quot;:&quot;5.12.214.213&quot;,&quot;path&quot;:&quot;/&quot;,&quot;port&quot;:49153,&quot;vhost&quot;:&quot;5.12.214.213&quot;}
+</code></pre>
+
+<p>其中 data 数据为 base64加密之后的HTTP 完整报文（包含 HTTP header 和 body）。<br/>
+我们先写一个简单的脚本来解析这行数据：</p>
+
+<pre><code class="language-python">linend = re.compile(r&#39;\r\n\r\n&#39;)
+title_regex = re.compile(&quot;&lt;title&gt;(.*?)&lt;/title&gt;&quot;, re.I | re.M)
+has_gzip_regex = re.compile(r&#39;Content-Encoding: gzip&#39;, re.I)
+
+def get_page(page_json):
+    &quot;&quot;&quot;
+    给一个json 返回一个page对象
+    &quot;&quot;&quot;
+    index = page_json[&#39;data&#39;].find(b&#39;\r\n\r\n&#39;)
+    header = page_json[&#39;data&#39;][:index].decode(errors=&#39;ignore&#39;)
+    body = page_json[&#39;data&#39;][index + 4:]
+    server = re.findall(server_regex, header)
+    if server:
+        server = server[0].strip()
+    else:
+        server = &quot;&quot;
+    if has_gzip_regex.findall(header):
+        try:
+            body = gzip.decompress(body)
+        except Exception as e:
+            pass
+    encoding = get_charset(header, body)
+    if encoding:
+        try:
+            body = body.decode(encoding)
+        except:  # 一些奇怪的编码问题，不管了
+            body = body.decode(errors=&#39;ignore&#39;)
+            pass
+    else:
+        body = body.decode(errors=&#39;ignore&#39;)
+    _ = re.findall(title_regex, body)
+
+    title = _[0] if _ else &quot;&quot;
+    print header, body, title
+</code></pre>
+
+<p>加入 spark 之后一个完整的脚本如下（略去了相关依赖库）。</p>
+
+<pre><code class="language-python">import base64
+import gzip
+import json
+import os
+import re
+import sys
+from functools import reduce
+
+import geoip2.database
+import pyspark
+from numpy import long
+
+linend = re.compile(r&#39;\r\n\r\n&#39;)
+title_regex = re.compile(&quot;&lt;title&gt;(.*?)&lt;/title&gt;&quot;, re.I | re.M)
+has_gzip_regex = re.compile(r&#39;Content-Encoding: gzip&#39;, re.I)
+
+from Util import Util, Page
+
+ip2int = lambda ip: reduce(lambda a, b: long(a) * 256 + long(b), ip.split(&#39;.&#39;))
+
+os.environ[
+    &#39;PYSPARK_SUBMIT_ARGS&#39;] = &#39;--jars ./elasticsearch-hadoop-6.7.0/dist/elasticsearch-spark-20_2.11-6.7.0.jar pyspark-shell&#39;
+
+def get_charset(header, html):
+    try:
+        m = re.search(b&#39;&lt;meta.*?charset=(.*?)&quot;(&gt;| |/)&#39;, html, flags=re.I)
+        if m:
+            return m.group(1).decode().replace(&#39;&quot;&#39;, &#39;&#39;)
+    except Exception as e:
+        pass
+    try:
+        if &#39;Content-Type&#39; in header:
+            m = re.search(r&#39;.*?charset=(.*?)(;|$)&#39;, header, flags=re.I)
+            if m:
+                return m.group(1)
+    except Exception as e:
+        pass
+
+server_regex = re.compile(&quot;server:(.*?)\r\n&quot;,re.I)
+def get_page(page_json):
+    &quot;&quot;&quot;
+    给一个json 返回一个page对象
+    &quot;&quot;&quot;
+    index = page_json[&#39;data&#39;].find(b&#39;\r\n\r\n&#39;)
+    header = page_json[&#39;data&#39;][:index].decode(errors=&#39;ignore&#39;)
+    body = page_json[&#39;data&#39;][index + 4:]
+    server = re.findall(server_regex, header)
+    if server:
+        server = server[0].strip()
+    else:
+        server = &quot;&quot;
+    if has_gzip_regex.findall(header):
+        try:
+            body = gzip.decompress(body)
+        except Exception as e:
+            pass
+    encoding = get_charset(header, body)
+    if encoding:
+        try:
+            body = body.decode(encoding)
+        except:  # 一些奇怪的编码问题，不管了
+            body = body.decode(errors=&#39;ignore&#39;)
+            pass
+    else:
+        body = body.decode(errors=&#39;ignore&#39;)
+    _ = re.findall(title_regex, body)
+
+    title = _[0] if _ else &quot;&quot;
+    page = Page(title=title, body=body, ip=page_json[&#39;vhost&#39;], port=page_json[&#39;port&#39;], header=header,server=server)
+    return page
+
+
+ip2int = lambda ip: reduce(lambda a, b: long(a) * 256 + long(b), ip.split(&#39;.&#39;))
+
+
+def parse_line(line_json):
+    reader = geoip2.database.Reader(&#39;./GeoLite2-ASN.mmdb&#39;)
+    data = base64.b64decode(line_json[&#39;data&#39;])
+    line_json[&#39;data&#39;] = data
+    page = get_page(line_json)
+    ip_int = ip2int(line_json[&#39;vhost&#39;])
+    ip_info = Util.get_ip_info(line_json[&#39;vhost&#39;])
+    line_json[&#39;ip_int&#39;] = ip_int
+    try:
+        line_json[&#39;location&#39;] = &#39;%.2f,%.2f&#39; % (float(ip_info[&#39;latitude&#39;]), float(ip_info[&#39;longitude&#39;]))
+    except:
+        pass # no location
+    try:
+        asn = reader.asn(line_json[&#39;ip&#39;])
+        line_json[&#39;asn_info&#39;] = {&quot;asn&quot;: asn.autonomous_system_number, &#39;asn_org&#39;: asn.autonomous_system_organization}
+    except:
+        pass
+    if page.server:
+        line_json[&#39;server&#39;] = page.server
+    line_json[&#39;title&#39;] = page.title
+    line_json[&#39;body&#39;] = page.body
+    line_json[&#39;header&#39;] = page.header
+    line_json[&#39;doc_id&#39;] = &#39;%s-%s-%s&#39;%(line_json[&#39;ip&#39;], line_json[&#39;port&#39;], &quot;http&quot;)
+    line_json.pop(&#39;path&#39;)
+    line_json.pop(&#39;vhost&#39;)
+    line_json.pop(&#39;data&#39;)
+    line_json.pop(&#39;host&#39;)
+    return line_json
+
+
+import hashlib
+
+
+def get_md5(ip, port):
+    return hashlib.md5((&#39;%s%d&#39; % (ip, port)).encode()).hexdigest()
+
+
+def main():
+    pyspark.SparkContext.setSystemProperty(&#39;spark.executor.memory&#39;, &#39;28g&#39;)
+    conf = pyspark.SparkConf().setMaster(&quot;local[*]&quot;).setAppName(&quot;Streamer&quot;)
+    conf.set(&#39;spark.executor.cores&#39;, 64)
+    conf.set(&quot;spark.executor.memory&quot;, &#39;32g&#39;)
+    es_write_conf = {
+        # specify the node that we are sending data to (this should be the master)
+        &quot;es.nodes&quot;: &#39;http://127.0.0.1:9200&#39;,
+        # specify the port in case it is not the default port
+        &#39;es.net.http.auth.user&#39;: &#39;&#39;,
+        &#39;es.net.http.auth.pass&#39;: &#39;&#39;,
+        # &quot;es.port&quot;: &#39;9243&#39;,
+        # &#39;es.net.ssl&#39;: &#39;true&#39;,
+        # specify a resource in the form &#39;index/doc-type&#39;
+        &quot;es.resource&quot;: &#39;http_test/_doc&#39;,
+        # is the input JSON?
+        &#39;es.nodes.wan.only&#39;: &#39;true&#39;,
+        &#39;es.nodes.discovery&#39;: &#39;false&#39;,
+        &quot;es.input.json&quot;: &quot;yes&quot;,
+        # is there a field in the mapping that should be used to specify the ES document ID
+        &quot;es.mapping.id&quot;: &quot;doc_id&quot;
+    }
+    with pyspark.SparkContext(&quot;local[*]&quot;, &quot;PySparkWordCount&quot;, conf=conf) as sc:
+        # Get a RDD containing lines from this script file
+        text_rdd = sc.textFile(sys.argv[1], 10)
+        json_rdd = text_rdd.map(json.loads)
+        result = json_rdd.map(parse_line)
+        result = result.map(lambda x: (x[&#39;doc_id&#39;], json.dumps(x, ensure_ascii=False)))
+        # print(result.take(10))
+        result.saveAsNewAPIHadoopFile(
+            path=&#39;-&#39;,
+            outputFormatClass=&quot;org.elasticsearch.hadoop.mr.EsOutputFormat&quot;,
+            keyClass=&quot;org.apache.hadoop.io.NullWritable&quot;,
+            valueClass=&quot;org.elasticsearch.hadoop.mr.LinkedMapWritable&quot;,
+            # critically, we must specify our `es_write_conf`
+            conf=es_write_conf)
+
+
+if __name__ == &#39;__main__&#39;:
+    main()
+</code></pre>
+
+<p>以上脚本演示了如何使用 pyspark 来读取一个文件，对每一行进行(并行)处理之后将结果写入到 ES 中。</p>
+
+<h2 id="toc_0">其他</h2>
+
+<p>处理 Rapid7的数据有以下几个注意事项：<br/>
+1. 对于header中存在 gzip 的HTTP报文，需要使用 gzip 解码 body 中的内容<br/>
+2. 可以从 header 的 Content-Type，body 的 charset 字段中找到编码信息</p>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[TravisCi与 Gitbook 实战：使用 TravisCi自动编译Gitbook文档并发布 Release]]></title>
     <link href="https://imfht.github.io/15518370394099.html"/>
     <updated>2019-03-06T09:50:39+08:00</updated>
     <id>https://imfht.github.io/15518370394099.html</id>
